@@ -13,8 +13,8 @@ router.get('/dashboard-stats', async (req, res) => {
     const totalElections = await Election.countDocuments();
     const totalCandidates = await Candidate.countDocuments();
 
-    const elections = await Election.find({}, 'name');
-    const electionNames = elections.map(e => e.name);
+    const elections = await Election.find({}, 'title');
+    const electionNames = elections.map(e => e.title);
 
     // Count votes per election
     const votesPerElection = await Promise.all(

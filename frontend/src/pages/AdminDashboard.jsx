@@ -7,8 +7,9 @@ import OverviewCards from "../components/admin/OverviewCards";
 import DashboardCharts from "../components/admin/DashboardCharts";
 import CreateElection from "../components/admin/CreateElection";
 import Candidates from "../pages/Candidates"; // Import your Candidates page
+import Users from "../pages/Users"; // Import the Users page
 
-function AdminDashboard({ user }) {
+function AdminDashboard({ user, onLogout }) { // Add onLogout prop here
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,9 +19,12 @@ function AdminDashboard({ user }) {
     let interval;
     async function fetchStats() {
       try {
-        const res = await axios.get("http://localhost:5000/api/admin/dashboard-stats", {
-          headers: { Authorization: `Bearer ${user?.token}` },
-        });
+        const res = await axios.get(
+          "http://localhost:5000/api/admin/dashboard-stats",
+          {
+            headers: { Authorization: `Bearer ${user?.token}` },
+          }
+        );
         setStats(res.data);
       } catch (err) {
         Swal.fire("Error", "Failed to load dashboard stats", "error");
@@ -37,6 +41,21 @@ function AdminDashboard({ user }) {
     return () => clearInterval(interval);
   }, [user, navigate]);
 
+  // Add fetchStats function to component scope
+  const refreshStats = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/admin/dashboard-stats",
+        {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        }
+      );
+      setStats(res.data);
+    } catch (err) {
+      Swal.fire("Error", "Failed to load dashboard stats", "error");
+    }
+  };
+
   if (loading)
     return (
       <div
@@ -48,12 +67,16 @@ function AdminDashboard({ user }) {
     );
 
   return (
-    <div className="container-fluid bg-light min-vh-100" style={{ width: "100vw", backgroundColor: "#000000" }}>
+    <div
+      className="container-fluid min-vh-100"
+      style={{ width: "100vw", backgroundColor: "#f8f9fa" }}
+    >
       <div className="row">
         <Sidebar
           user={user}
           navigate={navigate}
           onOpenCreateElection={() => setShowCreateElection(true)}
+          onLogout={onLogout} // This should now work
         />
         <div className="col-md-10 p-4">
           <Routes>
@@ -61,36 +84,47 @@ function AdminDashboard({ user }) {
               path="/"
               element={
                 <>
-                  <h2 className="mb-4 fw-bold">System Overview</h2>
+                  <h2 className="mb-4 fw-bold text-dark">System Overview</h2>
                   <OverviewCards stats={stats} />
                   <DashboardCharts stats={stats} />
-                  {/* Modal for Create Election */}
-                  {showCreateElection && (
-                    <div className="modal show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
-                      <div className="modal-dialog modal-lg">
-                        <div className="modal-content">
-                          <div className="modal-header">
-                            <h5 className="modal-title">Create New Election</h5>
-                            <button type="button" className="btn-close" onClick={() => setShowCreateElection(false)}></button>
-                          </div>
-                          <div className="modal-body">
-                            <CreateElection
-                              onCreated={() => {
-                                setShowCreateElection(false);
-                                window.location.reload();
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </>
               }
             />
             <Route path="candidates" element={<Candidates user={user} />} />
+            <Route path="users" element={<Users user={user} />} />
             {/* Add more admin routes here */}
           </Routes>
+
+          {/* Modal for Create Election - Moved outside Routes */}
+          {showCreateElection && (
+            <div
+              className="modal show d-block"
+              tabIndex="-1"
+              style={{ background: "rgba(0,0,0,0.5)" }}
+            >
+              <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">Create New Election</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => setShowCreateElection(false)}
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <CreateElection
+                      onCreated={() => {
+                        setShowCreateElection(false);
+                        refreshStats(); // Use the new function
+                      }}
+                      user={user}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

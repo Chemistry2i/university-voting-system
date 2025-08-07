@@ -9,10 +9,21 @@ import StudentDashboard from "./pages/StudentDashboard";
 import { useState, useEffect } from "react";
 
 // ProtectedRoute component to guard dashboard routes
-function ProtectedRoute({ user, children }) {
+function ProtectedRoute({ user, requiredRole, children }) {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  
+  // If a specific role is required, check if user has it
+  if (requiredRole && user.role !== requiredRole) {
+    // Redirect to appropriate dashboard based on user role
+    if (user.role === 'admin') {
+      return <Navigate to="/admin" replace />;
+    } else {
+      return <Navigate to="/student-dashboard" replace />;
+    }
+  }
+  
   return children;
 }
 
@@ -36,6 +47,13 @@ function App() {
     }
   }, [currentUser]);
 
+  // Function to handle logout
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("token");
+  };
+
   return (
     <Router>
       <Routes>
@@ -47,18 +65,33 @@ function App() {
         <Route
           path="/admin/*"
           element={
-            <ProtectedRoute user={currentUser}>
-              <AdminDashboard user={currentUser} />
+            <ProtectedRoute user={currentUser} requiredRole="admin">
+              <AdminDashboard user={currentUser} onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
         <Route
           path="/student-dashboard"
           element={
-            <ProtectedRoute user={currentUser}>
-              <StudentDashboard user={currentUser} />
+            <ProtectedRoute user={currentUser} requiredRole="student">
+              <StudentDashboard user={currentUser} onLogout={handleLogout} />
             </ProtectedRoute>
           }
+        />
+        {/* Default redirect based on user role */}
+        <Route 
+          path="/" 
+          element={
+            currentUser ? (
+              currentUser.role === 'admin' ? (
+                <Navigate to="/admin" replace />
+              ) : (
+                <Navigate to="/student-dashboard" replace />
+              )
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } 
         />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

@@ -41,3 +41,12 @@ label {
   font-size: 1.1rem;
 }
 
+
+.badge-green {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+td{
+  font-size: 14px !important;
+}

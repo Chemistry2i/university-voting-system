@@ -17,6 +17,8 @@ import DashboardCharts from "../components/admin/DashboardCharts";
 import CreateElection from "../components/admin/CreateElection";
 import Candidates from "../pages/Candidates"; // Import your Candidates page
 import Users from "../pages/Users"; // Import the Users page
+import Elections from "../pages/Elections"; // Import the Elections page
+import Logs from "../pages/Logs"; // Import the Logs page
 
 function AdminDashboard({ user, onLogout }) { // Add onLogout prop here
   const navigate = useNavigate();
@@ -282,14 +284,16 @@ function AdminDashboard({ user, onLogout }) { // Add onLogout prop here
                 path="/"
                 element={
                   <>
-                    <h2 className="mb-4 fw-bold text-success">System Overview</h2>
+                    <h4 className="mb-4 fw-bold text-primary">System Overview</h4>
                     <OverviewCards stats={stats} />
                     <DashboardCharts stats={stats} />
                   </>
                 }
               />
+              <Route path="elections" element={<Elections user={user} />} />
               <Route path="candidates" element={<Candidates user={user} />} />
               <Route path="users" element={<Users user={user} />} />
+              <Route path="logs" element={<Logs user={user} />} />
               {/* Add more admin routes here */}
             </Routes>
           </div>

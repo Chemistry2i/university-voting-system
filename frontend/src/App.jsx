@@ -5,7 +5,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import AdminDashboard from "./pages/AdminDashboard";
-import StudentDashboard from "./pages/StudentDashboard";
+import StudentDashboard from "./pages/studentDashboard";
 import { useState, useEffect } from "react";
 
 // ProtectedRoute component to guard dashboard routes

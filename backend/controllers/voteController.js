@@ -30,7 +30,7 @@ const castVote = asyncHandler(async (req, res) => {
     }
 
     // Check if user has already voted in this election
-    const existingVote = await Vote.findOne({ voter: req.user._id, election: electionId });
+    const existingVote = await Vote.findOne({ user: req.user._id, election: electionId });
     if (existingVote) {
       console.log({ message: "User has already voted in this election" });
       return res.status(400).json({ message: "You have already voted in this election" });
@@ -60,7 +60,7 @@ const castVote = asyncHandler(async (req, res) => {
 // @access  User
 const getMyVotes = asyncHandler(async (req, res) => {
   try {
-    const votes = await Vote.find({ voter: req.user._id })
+    const votes = await Vote.find({ user: req.user._id })
       .populate("election", "title")
       .populate("candidate", "name position");
     console.log({ message: "Fetched user's voting history" });
@@ -77,7 +77,7 @@ const getMyVotes = asyncHandler(async (req, res) => {
 const getVotesByElection = asyncHandler(async (req, res) => {
   try {
     const votes = await Vote.find({ election: req.params.electionId })
-      .populate("voter", "name email")
+      .populate("user", "name email")
       .populate("candidate", "name position");
     console.log({ message: "Fetched votes for election" });
     res.json(votes);
@@ -93,7 +93,7 @@ const getVotesByElection = asyncHandler(async (req, res) => {
 const getVotesByCandidate = asyncHandler(async (req, res) => {
   try {
     const votes = await Vote.find({ candidate: req.params.candidateId })
-      .populate("voter", "name email")
+      .populate("user", "name email")
       .populate("election", "title");
     console.log({ message: "Fetched votes for candidate" });
     res.json(votes);
@@ -109,7 +109,7 @@ const getVotesByCandidate = asyncHandler(async (req, res) => {
 const getAllVotes = asyncHandler(async (req, res) => {
   try {
     const votes = await Vote.find()
-      .populate("voter", "name email")
+      .populate("user", "name email")
       .populate("election", "title")
       .populate("candidate", "name position");
     console.log({ message: "Fetched all votes" });

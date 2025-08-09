@@ -15,6 +15,7 @@ import {
   faHistory,
   faPlusCircle,
   faUserCircle,
+  faBullhorn,
 } from "@fortawesome/free-solid-svg-icons";
 
 function Sidebar({ user, navigate, onOpenCreateElection, onLogout }) {
@@ -54,7 +55,7 @@ function Sidebar({ user, navigate, onOpenCreateElection, onLogout }) {
           </li>
           <li className="nav-item">
             <NavLink className="nav-link" to="/admin/elections">
-              <FontAwesomeIcon icon={faVoteYea} className="me-2" />
+              <FontAwesomeIcon icon={faBullhorn} className="me-2" />
               Elections
             </NavLink>
           </li>
